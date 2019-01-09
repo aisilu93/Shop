@@ -64,7 +64,6 @@ namespace Shop.ViewModel
                 _password = value;
             }
         }
-        private RelayCommand enterCommand;
         public RelayCommand EnterCommand
         {
             get;
@@ -92,8 +91,22 @@ namespace Shop.ViewModel
         }
         private object GoToPageShop()
         {
-            var msg = new GoToPageMessage() { PageName = "ShopWindow" };
-            Messenger.Default.Send<GoToPageMessage>(msg);
+            DbClient db = new DbClient();
+            db.users.Load();
+            user us = new user();
+            us = db.users
+                 .Where(u => u.login == _login)
+                 .FirstOrDefault<user>();
+            //us = db.users.Find(_login);
+            if (us != null && us.password == _password)
+            {
+                var msg = new GoToPageMessage() { PageName = "ShopWindow" };
+                Messenger.Default.Send<GoToPageMessage>(msg);
+                //ShopWindow s = new ShopWindow();
+                //s.Show();
+                //ShopViewModel a = new ShopViewModel(_dataService);
+                //Application.Current.Windows[0].Close();
+            }
             
             return null;
         }

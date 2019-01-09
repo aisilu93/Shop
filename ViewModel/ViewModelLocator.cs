@@ -13,7 +13,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using CommonServiceLocator;
 using Shop.Model;
-using Shop.ViewModel;
 
 namespace Shop.ViewModel
 {

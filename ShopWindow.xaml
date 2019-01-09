@@ -1,12 +1,16 @@
-﻿<Window x:Class="Shop.ShopWindow"
+﻿<UserControl x:Class="Shop.ShopWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
+        xmlns:GalaSoft_MvvmLight_Command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF4"
+         xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:Shop"
-        mc:Ignorable="d"
-        Title="Shop" Height="450" Width="800" MinHeight="450" MinWidth="800"
+        xmlns:ignore="http://www.ignore.com"
+             xmlns:GalaSoft_MvvmLight_Command1="http://www.galasoft.ch/mvvmlight"
+             mc:Ignorable="d ignore"
+        d:DesignHeight="450"
+        d:DesignWidth="800"
         DataContext="{Binding ShopWind, Source={StaticResource Locator}}">
     <TabControl>
         <TabItem Header="Ассортимент">
@@ -22,7 +26,7 @@
                 <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" BorderBrush="Silver" BorderThickness="1"  />
                 <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="Silver" BorderThickness="1"  />
                 <Label Grid.Column="1" Grid.Row="0">Доступно к заказу:</Label>
-                <DataGrid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{Binding goods_base}" BorderThickness="0" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True">
+                <DataGrid x:Name="GoodsTable" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{Binding goods_base}" BorderThickness="0" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Название" Binding="{Binding name_g}"  />
                         <DataGridTextColumn Header="Цена" Binding="{Binding price}"  />
@@ -31,7 +35,14 @@
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Command="{Binding HelloCommand}">Заказать</Button>
+                                    <Button Content="Заказать">
+                                        <Custom:Interaction.Triggers>
+                                            <Custom:EventTrigger EventName="Click">
+                                                <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="HelloButtonClicked"
+                                                               Command="{Binding ElementName=GoodsTable, Path=DataContext.HelloCommand, Mode=OneWay}" />
+                                            </Custom:EventTrigger>
+                                        </Custom:Interaction.Triggers>
+                                    </Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -44,4 +55,4 @@
         <TabItem Header="Редактирование пользователей"></TabItem>
         <TabItem Header="Отчеты"></TabItem>
     </TabControl>
-</Window>
+</UserControl>

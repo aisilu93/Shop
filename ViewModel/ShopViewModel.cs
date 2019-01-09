@@ -9,6 +9,7 @@ using System.Windows;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Controls;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace Shop.ViewModel
 {
@@ -22,6 +23,7 @@ namespace Shop.ViewModel
     {
         private readonly IDataService _dataService;
         public List<good> goods_base { get; set; }
+        public List<good> order { get; set; }
         public string InfoTitlePageShop
         {
             get
@@ -29,11 +31,23 @@ namespace Shop.ViewModel
                 return "Shop Window";
             }
         }
+        public RelayCommand HelloCommand {
+            get;
+            set;
+        }
+
+        private object AddingGood()
+        {
+            var msg = new GoToPageMessage() { PageName = "AddGood" };
+            Messenger.Default.Send<GoToPageMessage>(msg);
+            return null;
+        }
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public ShopViewModel(IDataService dataService)
         {
+            HelloCommand = new RelayCommand(() => AddingGood());
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>
@@ -51,7 +65,6 @@ namespace Shop.ViewModel
                     //WelcomeTitle2 = string.Join(" ", item.lst);
                 });
         }
-
         ////public override void Cleanup()
         ////{
         ////    // Clean up if needed
