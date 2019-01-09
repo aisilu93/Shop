@@ -13,6 +13,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using CommonServiceLocator;
 using Shop.Model;
+using Shop.ViewModel;
 
 namespace Shop.ViewModel
 {
@@ -39,6 +40,7 @@ namespace Shop.ViewModel
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<ShopViewModel>();
         }
 
         /// <summary>
@@ -52,6 +54,16 @@ namespace Shop.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
+            }
+        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public ShopViewModel ShopWind
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<ShopViewModel>();
             }
         }
 

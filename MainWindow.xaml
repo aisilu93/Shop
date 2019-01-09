@@ -3,13 +3,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:GalaSoft_MvvmLight_Command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF4"
+        xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:ignore="http://www.galasoft.ch/ignore"
+        xmlns:GalaSoft_MvvmLight_Command1="http://www.galasoft.ch/mvvmlight"
         mc:Ignorable="d ignore"
-        Height="300"
-        Width="300"
-        Title="MVVM Light Application"
+        Height="200"
+        Width="323"
+        MaxHeight="200"
+        MaxWidth="323"
+        MinHeight="200"
+        MinWidth="323"
+        Title="Shop"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,14 +26,31 @@
     </Window.Resources>
 
     <Grid x:Name="LayoutRoot">
-
-        <TextBlock FontSize="36"
-                   FontWeight="Bold"
-                   Foreground="Purple"
-                   Text="{Binding WelcomeTitle}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   TextWrapping="Wrap" />
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="39*"></ColumnDefinition>
+            <ColumnDefinition Width="79*"></ColumnDefinition>
+            <ColumnDefinition Width="168*"></ColumnDefinition>
+            <ColumnDefinition Width="30*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="1" Grid.Row="1" FontSize="18" FontWeight="Bold" BorderThickness="0" Text="Логин" TextWrapping="Wrap" IsReadOnly="True" IsTabStop="False"  />
+        <TextBox Grid.Column="2" Grid.Row="1" FontSize="18" FontWeight="Bold" Text="{Binding login}" TextWrapping="Wrap"  />
+        <TextBox Grid.Column="1" Grid.Row="2" FontSize="18" FontWeight="Bold" BorderThickness="0" Text="Пароль" TextWrapping="Wrap" IsReadOnly="True" IsTabStop="False"  />
+        <TextBox Grid.Column="2" Grid.Row="2" FontSize="18" FontWeight="Bold" Text="{Binding password}" TextWrapping="Wrap"  />
+        <Button Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" Grid.RowSpan="2" Width="100" Height="30" Command="{Binding EnterCommand}" Content="Вход">
+            <Custom:Interaction.Triggers>
+                <Custom:EventTrigger EventName="Click">
+                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="EnterButtonClicked"
+                                                               Command="{Binding EnterCommand, Mode=OneWay}" />
+                </Custom:EventTrigger>
+            </Custom:Interaction.Triggers>
+        </Button>
 
     </Grid>
 </Window>

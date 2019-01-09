@@ -1,5 +1,14 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.Collections.Generic;
+using GalaSoft.MvvmLight;
 using Shop.Model;
+using System.Data.Entity;
+using System.Collections.ObjectModel;
+using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.Windows;
+using System.Linq;
+using CommonServiceLocator;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace Shop.ViewModel
 {
@@ -14,45 +23,99 @@ namespace Shop.ViewModel
         private readonly IDataService _dataService;
 
         /// <summary>
-        /// The <see cref="WelcomeTitle" /> property's name.
+        /// The <see cref="login" /> property's name.
         /// </summary>
-        public const string WelcomeTitlePropertyName = "WelcomeTitle";
+        public const string LoginPropertyName = "login";
+        /// <summary>
+        /// The <see cref="password" /> property's name.
+        /// </summary>
+        public const string PassPropertyName = "password";
 
-        private string _welcomeTitle = string.Empty;
+        private string _login = string.Empty;
+        private string _password = string.Empty;
 
         /// <summary>
-        /// Gets the WelcomeTitle property.
+        /// Gets the login property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public string WelcomeTitle
+        public string login
         {
             get
             {
-                return _welcomeTitle;
+                return _login;
             }
             set
             {
-                Set(ref _welcomeTitle, value);
+                _login = value;
             }
         }
-
+        /// <summary>
+        /// Gets the password property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string password
+        {
+            get
+            {
+                return _password;
+            }
+            set
+            {
+                _password = value;
+            }
+        }
+        private RelayCommand enterCommand;
+        public RelayCommand EnterCommand
+        {
+            get;
+            private set;
+            /*{
+                /*Action showMethod = delegate () {
+                    DbClient db = new DbClient();
+                    db.users.Load();
+                    user us = new user();
+                    us = db.users
+                         .Where(u => u.login == _login)
+                         .FirstOrDefault<user>();
+                    //us = db.users.Find(_login);
+                    if (us != null && us.password == _password)
+                    {
+                        //ShopWindow s = new ShopWindow();
+                        //s.Show();
+                        //ShopViewModel a = new ShopViewModel(_dataService);
+                        //Application.Current.Windows[0].Close();
+                    }
+                };
+                return enterCommand ??
+                    (enterCommand = new RelayCommand(showMethod));
+            }*/
+        }
+        private object GoToPageShop()
+        {
+            var msg = new GoToPageMessage() { PageName = "ShopWindow" };
+            Messenger.Default.Send<GoToPageMessage>(msg);
+            
+            return null;
+        }
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel(IDataService dataService)
         {
+            EnterCommand = new RelayCommand(() => GoToPageShop());
             _dataService = dataService;
             _dataService.GetData(
-                (item, error) =>
+                (user item, Exception error) =>
                 {
                     if (error != null)
                     {
                         // Report error here
                         return;
                     }
-
-                    WelcomeTitle = item.Title;
+                    //WelcomeTitle2 = string.Join(" ", item.lst);
                 });
+            login = "test_admin";
+            password = "123456";
         }
 
         ////public override void Cleanup()

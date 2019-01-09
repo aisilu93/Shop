@@ -7,6 +7,7 @@ namespace Shop.Model
 {
     public interface IDataService
     {
-        void GetData(Action<DataItem, Exception> callback);
+        void GetData(Action<good, Exception> callback);
+        void GetData(Action<user, Exception> callback);
     }
 }
