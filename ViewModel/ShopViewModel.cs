@@ -10,6 +10,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Controls;
 using GalaSoft.MvvmLight.Messaging;
+using System.Data.Entity.Infrastructure;
 
 namespace Shop.ViewModel
 {
@@ -22,8 +23,9 @@ namespace Shop.ViewModel
     public class ShopViewModel : ViewModelBase
     {
         private readonly IDataService _dataService;
-        public List<good> goods_base { get; set; }
-        public List<good> order { get; set; }
+        public List<good_view> goods_base { get; set; }
+        //public List<goods_category> cats_base { get; set; }
+        public ObservableCollection<good> order { get; set; }
         public string InfoTitlePageShop
         {
             get
@@ -31,14 +33,14 @@ namespace Shop.ViewModel
                 return "Shop Window";
             }
         }
-        public RelayCommand HelloCommand {
+        public RelayCommand<string> AddCommand {
             get;
             set;
         }
 
-        private object AddingGood()
+        private object AddingGood(string param)
         {
-            var msg = new GoToPageMessage() { PageName = "AddGood" };
+            var msg = new GoToPageMessage() { PageName = "AddGood", Parameter = param };
             Messenger.Default.Send<GoToPageMessage>(msg);
             return null;
         }
@@ -47,7 +49,7 @@ namespace Shop.ViewModel
         /// </summary>
         public ShopViewModel(IDataService dataService)
         {
-            HelloCommand = new RelayCommand(() => AddingGood());
+            AddCommand = new RelayCommand<string>((param) => AddingGood(param));
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>
@@ -58,9 +60,13 @@ namespace Shop.ViewModel
                         return;
                     }
                     DbClient db = new DbClient();
-                    db.goods.Load();
-                    goods_base = new List<good>();
-                    goods_base=db.goods.ToList<good>();
+                    //db.goods.Load();
+                    order = new ObservableCollection<good>();
+                    goods_base = new List<good_view>();
+                    string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
+                    goods_base = db.Database.SqlQuery<good_view>(query).ToList<good_view>();
+                    
+                    //goods_base =db.goods.ToList<good>();
                     //foreach (var i in db.goods.ToList<good>()) { goods_base.Add(i.name_g); }
                     //WelcomeTitle2 = string.Join(" ", item.lst);
                 });

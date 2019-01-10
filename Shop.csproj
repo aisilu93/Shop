@@ -94,6 +94,7 @@
     <Compile Include="Model\DataService.cs" />
     <Compile Include="Model\DbClient.cs" />
     <Compile Include="Model\IDataService.cs" />
+    <Compile Include="Model\order.cs" />
     <Compile Include="Model\user.cs" />
     <Compile Include="ShopWindow.xaml.cs">
       <DependentUpon>ShopWindow.xaml</DependentUpon>

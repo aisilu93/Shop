@@ -30,7 +30,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Название" Binding="{Binding name_g}"  />
                         <DataGridTextColumn Header="Цена" Binding="{Binding price}"  />
-                        <DataGridTextColumn Header="Категория" Binding="{Binding cat_g}"  />
+                        <DataGridTextColumn Header="Категория" Binding="{Binding name_gc}"  />
                         <DataGridTextColumn Header="В наличии" Binding="{Binding in_storage}"  />
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
@@ -39,7 +39,7 @@
                                         <Custom:Interaction.Triggers>
                                             <Custom:EventTrigger EventName="Click">
                                                 <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="HelloButtonClicked"
-                                                               Command="{Binding ElementName=GoodsTable, Path=DataContext.HelloCommand, Mode=OneWay}" />
+                                                               Command="{Binding ElementName=GoodsTable, Path=DataContext.AddCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
                                             </Custom:EventTrigger>
                                         </Custom:Interaction.Triggers>
                                     </Button>
@@ -47,6 +47,11 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid Name="CurrentOrder" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding order}"  IsReadOnly="True">
+                    <!--<DataGridTextColumn Header="Название" Binding="{Binding name_g}"  />
+                    <DataGridTextColumn Header="Цена" Binding="{Binding price}"  />
+                    <DataGridTextColumn Header="Количество" Binding="{Binding amount}"  />-->
                 </DataGrid>
             </Grid>
         </TabItem>
