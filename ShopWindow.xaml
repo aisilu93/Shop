@@ -22,11 +22,12 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"></RowDefinition>
                     <RowDefinition Height="70*"></RowDefinition>
+                    <RowDefinition Height="10*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" BorderBrush="Silver" BorderThickness="1"  />
-                <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="Silver" BorderThickness="1"  />
+                <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" BorderBrush="Silver" BorderThickness="1"  />
+                <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" BorderBrush="Silver" BorderThickness="1"  />
                 <Label Grid.Column="1" Grid.Row="0">Доступно к заказу:</Label>
-                <DataGrid x:Name="GoodsTable" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{Binding goods_base}" BorderThickness="0" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True">
+                <DataGrid x:Name="GoodsTable" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{Binding goods_base}" BorderThickness="0" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Название" Binding="{Binding name_g}"  />
                         <DataGridTextColumn Header="Цена" Binding="{Binding price}"  />
@@ -53,6 +54,15 @@
                     <DataGridTextColumn Header="Цена" Binding="{Binding price}"  />
                     <DataGridTextColumn Header="Количество" Binding="{Binding amount}"  />-->
                 </DataGrid>
+                <Button Grid.Column="0" Grid.Row="2"  Content="Заказать" >
+                    <Custom:Interaction.Triggers>
+                        <Custom:EventTrigger EventName="Click">
+                            <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="CreateOrderButtonClicked"
+                                                               Command="{Binding CreateOrderCommand, Mode=OneWay}" />
+                        </Custom:EventTrigger>
+                    </Custom:Interaction.Triggers>
+
+                </Button>
             </Grid>
         </TabItem>
         <TabItem Header="Заказы"></TabItem>

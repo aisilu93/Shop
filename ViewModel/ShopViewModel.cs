@@ -37,6 +37,11 @@ namespace Shop.ViewModel
             get;
             set;
         }
+        public RelayCommand CreateOrderCommand
+        {
+            get;
+            set;
+        }
 
         private object AddingGood(string param)
         {
@@ -44,12 +49,21 @@ namespace Shop.ViewModel
             Messenger.Default.Send<GoToPageMessage>(msg);
             return null;
         }
+
+        private object NewOrder()
+        {
+            var msg = new GoToPageMessage() { PageName = "CreateOrder"};
+            Messenger.Default.Send<GoToPageMessage>(msg);
+            return null;
+        }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public ShopViewModel(IDataService dataService)
         {
             AddCommand = new RelayCommand<string>((param) => AddingGood(param));
+            CreateOrderCommand = new RelayCommand(() => NewOrder());
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>

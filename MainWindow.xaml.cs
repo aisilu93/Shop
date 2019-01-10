@@ -61,8 +61,9 @@ namespace Shop
                         {
                             good i = order_item;
                             i.in_storage++;
+                            int index = loc.ShopWind.order.IndexOf(order_item);
                             loc.ShopWind.order.Remove(order_item);
-                            loc.ShopWind.order.Add(i);
+                            loc.ShopWind.order.Insert(index,i);
                         }
                         break;
                     }
@@ -70,6 +71,9 @@ namespace Shop
                     loc.ShopWind.order.Add(j);
                     /*order_list.Add(a.Find(x => x.id_good == Convert.ToInt32(action.Parameter)));
                     Page2View.CurrentOrder.ItemsSource = order_list;*/
+                    break;
+                case "CreateOrder":
+                    MessageBox.Show("new order");
                     break;
                 default:
                     break;
