@@ -48,32 +48,8 @@ namespace Shop
                     if (this.contentControl1.Content != this.Page2View)
                         this.contentControl1.Content = this.Page2View;
                     break;
-                case "AddGood":
-                    //good a = action.Parameter as good;
-                    ViewModelLocator loc = new ViewModelLocator();
-                    List<good_view> a = Page2View.GoodsTable.ItemsSource as List<good_view>;
-                    good_view selected_item = a.Find(x => x.id_good == Convert.ToInt32(action.Parameter));
-                    good order_item = loc.ShopWind.order
-                                                  .Where(x => x.id_good == selected_item.id_good).FirstOrDefault();
-                    if (order_item!=null)
-                    {
-                        if (order_item.in_storage < selected_item.in_storage)
-                        {
-                            good i = order_item;
-                            i.in_storage++;
-                            int index = loc.ShopWind.order.IndexOf(order_item);
-                            loc.ShopWind.order.Remove(order_item);
-                            loc.ShopWind.order.Insert(index,i);
-                        }
-                        break;
-                    }
-                    good j = selected_item.ToGood();
-                    loc.ShopWind.order.Add(j);
-                    /*order_list.Add(a.Find(x => x.id_good == Convert.ToInt32(action.Parameter)));
-                    Page2View.CurrentOrder.ItemsSource = order_list;*/
-                    break;
                 case "CreateOrder":
-                    MessageBox.Show("new order");
+                    MessageBox.Show(action.Parameter);
                     break;
                 default:
                     break;

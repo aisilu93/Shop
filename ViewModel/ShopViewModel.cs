@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using GalaSoft.MvvmLight.Messaging;
 using System.Data.Entity.Infrastructure;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Shop.ViewModel
 {
@@ -23,36 +25,78 @@ namespace Shop.ViewModel
     public class ShopViewModel : ViewModelBase
     {
         private readonly IDataService _dataService;
+        private DbClient db;
         public List<good_view> goods_base { get; set; }
-        //public List<goods_category> cats_base { get; set; }
         public ObservableCollection<good> order { get; set; }
-        public string InfoTitlePageShop
+        public class result: INotifyPropertyChanged
         {
-            get
+            private int _prop;
+            public int prop
             {
-                return "Shop Window";
+                get { return _prop; }
+                set
+                {
+                    _prop = value;
+                    OnPropertyChanged("prop");
+                }
+            }
+            public event PropertyChangedEventHandler PropertyChanged;
+            public void OnPropertyChanged([CallerMemberName]string prop = "")
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
             }
         }
-        public RelayCommand<string> AddCommand {
-            get;
-            set;
-        }
-        public RelayCommand CreateOrderCommand
-        {
-            get;
-            set;
-        }
+        public result res { get; set; }
+        public RelayCommand<int> AddCommand     { get; set; }
+        public RelayCommand<int> DeleteCommand  { get; set; }
+        public RelayCommand CreateOrderCommand  { get; set; }
 
-        private object AddingGood(string param)
+        private object AddingGood(int param)
         {
-            var msg = new GoToPageMessage() { PageName = "AddGood", Parameter = param };
-            Messenger.Default.Send<GoToPageMessage>(msg);
+            good_view selected_item = goods_base.Find(x => x.id_good == param);
+            good order_item = order.Where(x => x.id_good == selected_item.id_good).FirstOrDefault();
+            if (order_item != null)
+            {
+                if (order_item.in_storage < selected_item.in_storage)
+                {
+                    good i = order_item;
+                    i.in_storage++;
+                    int index = order.IndexOf(order_item);
+                    order.Remove(order_item);
+                    order.Insert(index, i);
+                }
+            }
+            else
+            {
+                good j = selected_item.ToGood();
+                order.Add(j);
+            }
+            res.prop = 0;
+            foreach(var item in order)
+            {
+                res.prop += item.price*item.in_storage;
+            }
             return null;
         }
-
+        private object DeletingGood(int param)
+        {
+            good order_item = order.Where(x => x.id_good == param).FirstOrDefault();
+            if (order_item != null) order.Remove(order_item);
+            res.prop = 0;
+            foreach (var item in order)
+            {
+                res.prop += item.price * item.in_storage;
+            }
+            return null;
+        }
         private object NewOrder()
         {
-            var msg = new GoToPageMessage() { PageName = "CreateOrder"};
+            string query = "SELECT max(id_ord) FROM orders";
+            var orderid = db.Database.SqlQuery<int?>(query).First();
+
+            query = "";
+
+            var msg = new GoToPageMessage() { PageName = "CreateOrder", Parameter=orderid.ToString()};
             Messenger.Default.Send<GoToPageMessage>(msg);
             return null;
         }
@@ -62,7 +106,10 @@ namespace Shop.ViewModel
         /// </summary>
         public ShopViewModel(IDataService dataService)
         {
-            AddCommand = new RelayCommand<string>((param) => AddingGood(param));
+            res = new result();
+            res.prop = 0;
+            AddCommand = new RelayCommand<int>((param) => AddingGood(param));
+            DeleteCommand = new RelayCommand<int>((param) => DeletingGood(param));
             CreateOrderCommand = new RelayCommand(() => NewOrder());
             _dataService = dataService;
             _dataService.GetData(
@@ -73,7 +120,7 @@ namespace Shop.ViewModel
                         // Report error here
                         return;
                     }
-                    DbClient db = new DbClient();
+                    db = new DbClient();
                     //db.goods.Load();
                     order = new ObservableCollection<good>();
                     goods_base = new List<good_view>();
