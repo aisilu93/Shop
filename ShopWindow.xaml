@@ -92,7 +92,8 @@
                 
             </Grid>
         </TabItem>
-        <TabItem Header="Заказы"></TabItem>
+        <TabItem Header="Заказы">
+        </TabItem>
         <TabItem Header="Редактирование товаров"></TabItem>
         <TabItem Header="Редактирование пользователей"></TabItem>
         <TabItem Header="Отчеты"></TabItem>

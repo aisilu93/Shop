@@ -47,9 +47,11 @@ namespace Shop
                 case "ShopWindow":
                     if (this.contentControl1.Content != this.Page2View)
                         this.contentControl1.Content = this.Page2View;
+                    this.Title = "Shop: " + action.Parameter;
+                    ShopViewModel.userid = Convert.ToInt32(action.Parameter);
                     break;
                 case "CreateOrder":
-                    MessageBox.Show(action.Parameter);
+                    MessageBox.Show("Заказ №"+ action.Parameter+" добавлен");
                     break;
                 default:
                     break;

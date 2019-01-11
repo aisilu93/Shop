@@ -24,9 +24,10 @@ namespace Shop.ViewModel
     /// </summary>
     public class ShopViewModel : ViewModelBase
     {
+        static public int userid = 0;
         private readonly IDataService _dataService;
         private DbClient db;
-        public List<good_view> goods_base { get; set; }
+        public ObservableCollection<good_view> goods_base { get; set; }
         public ObservableCollection<good> order { get; set; }
         public class result: INotifyPropertyChanged
         {
@@ -53,7 +54,7 @@ namespace Shop.ViewModel
 
         private object AddingGood(int param)
         {
-            good_view selected_item = goods_base.Find(x => x.id_good == param);
+            good_view selected_item = goods_base.First(x => x.id_good == param);
             good order_item = order.Where(x => x.id_good == selected_item.id_good).FirstOrDefault();
             if (order_item != null)
             {
@@ -91,14 +92,42 @@ namespace Shop.ViewModel
         }
         private object NewOrder()
         {
-            string query = "SELECT max(id_ord) FROM orders";
+            TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
+            int timestamp = (int)t.TotalSeconds;
+            string query = "INSERT INTO orders(`id_user`,`timestamp`) VALUES ("+userid+","+ timestamp+")";
+            db.Database.ExecuteSqlCommand(query);
+            db.SaveChanges();
+
+            query = "SELECT max(id_ord) FROM orders";
             var orderid = db.Database.SqlQuery<int?>(query).First();
 
-            query = "";
-
+            foreach(var item in order)
+            {
+                query = "INSERT INTO order_items(`id_order`,`id_good`,`amount`,`price`) VALUES("+orderid+","+ item.id_good+ "," + item.in_storage + "," + item.price + ")";
+                db.Database.ExecuteSqlCommand(query);
+                query = "UPDATE goods SET `in_storage`=`in_storage`-"+item.in_storage+" WHERE `id_good`="+item.id_good;
+                db.Database.ExecuteSqlCommand(query);
+                db.SaveChanges();
+            }
+            order.Clear();
+            goods_base.Clear();
+            LoadGoodsBase();
+            res.prop = 0;
             var msg = new GoToPageMessage() { PageName = "CreateOrder", Parameter=orderid.ToString()};
             Messenger.Default.Send<GoToPageMessage>(msg);
             return null;
+        }
+
+        private void LoadGoodsBase()
+        {
+            if(goods_base==null) goods_base = new ObservableCollection<good_view>();
+            else goods_base.Clear();
+            string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
+            List<good_view> temp = db.Database.SqlQuery<good_view>(query).ToList<good_view>();
+            foreach(var item in temp)
+            {
+                goods_base.Add(item);
+            }
         }
 
         /// <summary>
@@ -123,9 +152,10 @@ namespace Shop.ViewModel
                     db = new DbClient();
                     //db.goods.Load();
                     order = new ObservableCollection<good>();
-                    goods_base = new List<good_view>();
+                    LoadGoodsBase();
+                    /*goods_base = new List<good_view>();
                     string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
-                    goods_base = db.Database.SqlQuery<good_view>(query).ToList<good_view>();
+                    goods_base = db.Database.SqlQuery<good_view>(query).ToList<good_view>();*/
                     
                     //goods_base =db.goods.ToList<good>();
                     //foreach (var i in db.goods.ToList<good>()) { goods_base.Add(i.name_g); }
