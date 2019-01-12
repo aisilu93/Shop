@@ -100,7 +100,7 @@ namespace Shop.ViewModel
             //us = db.users.Find(_login);
             if (us != null && us.password == _password)
             {
-                var msg = new GoToPageMessage() { PageName = "ShopWindow", Parameter = us.id_user.ToString() };
+                var msg = new GoToPageMessage() { PageName = "ShopWindow", Parameter = us.id_user.ToString(), Parameter2=us.user_cat.ToString() };
                 Messenger.Default.Send<GoToPageMessage>(msg);
                 //ShopWindow s = new ShopWindow();
                 //s.Show();

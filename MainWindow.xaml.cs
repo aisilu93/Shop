@@ -46,10 +46,17 @@ namespace Shop
             switch (action.PageName)
             {
                 case "ShopWindow":
+                    ShopViewModel.userright = Convert.ToInt32(action.Parameter2);
+                    ShopViewModel.userid = Convert.ToInt32(action.Parameter);
+                    if (ShopViewModel.userright == 2)
+                    {
+                        this.Page2View.GoodsEdit.Visibility = Visibility.Hidden;
+                        this.Page2View.UsersEdit.Visibility = Visibility.Hidden;
+                        this.Page2View.Reports.Visibility = Visibility.Hidden;
+                    }
+                    this.Title = "Shop: " + action.Parameter;
                     if (this.contentControl1.Content != this.Page2View)
                         this.contentControl1.Content = this.Page2View;
-                    this.Title = "Shop: " + action.Parameter;
-                    ShopViewModel.userid = Convert.ToInt32(action.Parameter);
                     break;
                 case "CreateOrder":
                     MessageBox.Show("Заказ №"+ action.Parameter+" добавлен");

@@ -15,7 +15,7 @@
         DataContext="{Binding ShopWind, Source={StaticResource Locator}}"
         >
     <TabControl Name="Tabs" SelectionChanged="UserControl_Loaded">
-        <TabItem Header="Ассортимент">
+        <TabItem Name="Assortiment" Header="Ассортимент">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30*"></ColumnDefinition>
@@ -93,7 +93,7 @@
                 
             </Grid>
         </TabItem>
-        <TabItem Header="Заказы">
+        <TabItem Name="Orders" Header="Заказы">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50*"></ColumnDefinition>
@@ -156,8 +156,8 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Header="Редактирование товаров"></TabItem>
-        <TabItem Header="Редактирование пользователей"></TabItem>
+        <TabItem Name="GoodsEdit" Header="Редактирование товаров"></TabItem>
+        <TabItem Name="UsersEdit" Header="Редактирование пользователей"></TabItem>
         <TabItem Name="Reports"  Header="Отчеты">
             <WindowsFormsHost>
                 <dvc:Chart x:Name="chart" />

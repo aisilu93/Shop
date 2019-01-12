@@ -25,6 +25,7 @@ namespace Shop.ViewModel
     public class ShopViewModel : ViewModelBase
     {
         static public int userid = 0;
+        static public int userright = 0;
         private readonly IDataService _dataService;
         private DbClient db;
         public ObservableCollection<good_view> goods_base { get; set; }
