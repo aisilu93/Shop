@@ -29,6 +29,9 @@ namespace Shop.ViewModel
         private DbClient db;
         public ObservableCollection<good_view> goods_base { get; set; }
         public ObservableCollection<good> order { get; set; }
+        public ObservableCollection<order> orders_base { get; set; }
+        public ObservableCollection<order_item> order_items { get; set; }
+
         public class result: INotifyPropertyChanged
         {
             private int _prop;
@@ -48,9 +51,10 @@ namespace Shop.ViewModel
             }
         }
         public result res { get; set; }
-        public RelayCommand<int> AddCommand     { get; set; }
-        public RelayCommand<int> DeleteCommand  { get; set; }
-        public RelayCommand CreateOrderCommand  { get; set; }
+        public RelayCommand<int> AddCommand             { get; set; }
+        public RelayCommand<int> DeleteCommand          { get; set; }
+        public RelayCommand CreateOrderCommand          { get; set; }
+        public RelayCommand<string> GetOrderItemsCommand   { get; set; }
 
         private object AddingGood(int param)
         {
@@ -120,13 +124,32 @@ namespace Shop.ViewModel
 
         private void LoadGoodsBase()
         {
-            if(goods_base==null) goods_base = new ObservableCollection<good_view>();
+            if (goods_base==null) goods_base = new ObservableCollection<good_view>();
             else goods_base.Clear();
             string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
             List<good_view> temp = db.Database.SqlQuery<good_view>(query).ToList<good_view>();
             foreach(var item in temp)
             {
                 goods_base.Add(item);
+            }
+            if (orders_base == null) orders_base = new ObservableCollection<order>();
+            else orders_base.Clear();
+            query = "SELECT orders.*,users.login FROM orders, users WHERE orders.id_user=users.id_user";
+            List<order> temp_orders = db.Database.SqlQuery<order>(query).ToList<order>();
+            foreach (var item in temp_orders)
+            {
+                orders_base.Add(item);
+            }
+        }
+
+        private void GetOrderItems(string param)
+        {
+            order_items.Clear();
+            string query = "SELECT order_items.*, goods.name_g FROM order_items,goods WHERE order_items.id_order="+param+" AND order_items.id_good=goods.id_good";
+            List<order_item> temp_items = db.Database.SqlQuery<order_item>(query).ToList<order_item>();
+            foreach (var item in temp_items)
+            {
+                order_items.Add(item);
             }
         }
 
@@ -140,6 +163,8 @@ namespace Shop.ViewModel
             AddCommand = new RelayCommand<int>((param) => AddingGood(param));
             DeleteCommand = new RelayCommand<int>((param) => DeletingGood(param));
             CreateOrderCommand = new RelayCommand(() => NewOrder());
+            GetOrderItemsCommand = new RelayCommand<string>((param) => GetOrderItems(param));
+            order_items = new ObservableCollection<order_item>();
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>

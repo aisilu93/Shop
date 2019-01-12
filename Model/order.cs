@@ -8,26 +8,33 @@ using System.Threading.Tasks;
 
 namespace Shop.Model
 {
-    [Table("orders")]
     public class order
     {
-        [Key]
+        public int id_ord
+        {
+            get;
+            set;
+        }
         public int id_user
         {
             get;
-            private set;
+            set;
+        }
+        public string login
+        {
+            get;
+            set;
         }
         public int timestamp
         {
             get;
-            private set;
+            set;
         }
     }
 
-    [Table("order_items")]
-    class order_item
+    
+    public class order_item
         {
-        [Key]
         public int id
         {
             get;
@@ -39,6 +46,11 @@ namespace Shop.Model
             private set;
         }
         public int id_good
+        {
+            get;
+            private set;
+        }
+        public string name_g
         {
             get;
             private set;
