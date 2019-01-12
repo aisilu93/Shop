@@ -6,6 +6,7 @@ using System.Windows;
 using GalaSoft.MvvmLight.Messaging;
 using Shop.Model;
 using Shop.ViewModel;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Shop
 {

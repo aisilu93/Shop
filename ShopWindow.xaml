@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dvc="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
         xmlns:GalaSoft_MvvmLight_Command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF4"
          xmlns:Custom="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:Shop"
@@ -11,8 +12,9 @@
              mc:Ignorable="d ignore"
         d:DesignHeight="450"
         d:DesignWidth="800"
-        DataContext="{Binding ShopWind, Source={StaticResource Locator}}">
-    <TabControl>
+        DataContext="{Binding ShopWind, Source={StaticResource Locator}}"
+        >
+    <TabControl Name="Tabs" SelectionChanged="UserControl_Loaded">
         <TabItem Header="Ассортимент">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -156,6 +158,10 @@
         </TabItem>
         <TabItem Header="Редактирование товаров"></TabItem>
         <TabItem Header="Редактирование пользователей"></TabItem>
-        <TabItem Header="Отчеты"></TabItem>
+        <TabItem Name="Reports"  Header="Отчеты">
+            <WindowsFormsHost>
+                <dvc:Chart x:Name="chart" />
+            </WindowsFormsHost>
+        </TabItem>
     </TabControl>
 </UserControl>

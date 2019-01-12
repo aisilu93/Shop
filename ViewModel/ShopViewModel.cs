@@ -31,6 +31,7 @@ namespace Shop.ViewModel
         public ObservableCollection<good> order { get; set; }
         public ObservableCollection<order> orders_base { get; set; }
         public ObservableCollection<order_item> order_items { get; set; }
+        public ObservableCollection<orders_stats> statistics { get; set; }
 
         public class result: INotifyPropertyChanged
         {
@@ -51,30 +52,33 @@ namespace Shop.ViewModel
             }
         }
         public result res { get; set; }
-        public RelayCommand<int> AddCommand             { get; set; }
-        public RelayCommand<int> DeleteCommand          { get; set; }
-        public RelayCommand CreateOrderCommand          { get; set; }
-        public RelayCommand<string> GetOrderItemsCommand   { get; set; }
+        public RelayCommand<int> AddCommand                 { get; set; }
+        public RelayCommand<int> DeleteCommand              { get; set; }
+        public RelayCommand CreateOrderCommand              { get; set; }
+        public RelayCommand<string> GetOrderItemsCommand    { get; set; }
 
         private object AddingGood(int param)
         {
             good_view selected_item = goods_base.First(x => x.id_good == param);
             good order_item = order.Where(x => x.id_good == selected_item.id_good).FirstOrDefault();
-            if (order_item != null)
+            if (selected_item.in_storage > 0)
             {
-                if (order_item.in_storage < selected_item.in_storage)
+                if (order_item != null)
                 {
-                    good i = order_item;
-                    i.in_storage++;
-                    int index = order.IndexOf(order_item);
-                    order.Remove(order_item);
-                    order.Insert(index, i);
+                    if (order_item.in_storage < selected_item.in_storage)
+                    {
+                        good i = order_item;
+                        i.in_storage++;
+                        int index = order.IndexOf(order_item);
+                        order.Remove(order_item);
+                        order.Insert(index, i);
+                    }
                 }
-            }
-            else
-            {
-                good j = selected_item.ToGood();
-                order.Add(j);
+                else
+                {
+                    good j = selected_item.ToGood();
+                    order.Add(j);
+                }
             }
             res.prop = 0;
             foreach(var item in order)
@@ -140,6 +144,14 @@ namespace Shop.ViewModel
             {
                 orders_base.Add(item);
             }
+            if (statistics == null) statistics = new ObservableCollection<orders_stats>();
+            else statistics.Clear();
+            query = "SELECT goods_categories.name_gc || ': ' || SUM(order_items.amount) AS name_gc, SUM(order_items.amount) AS amount FROM goods_categories, order_items, goods WHERE goods.cat_g = goods_categories.id_gc AND goods.id_good = order_items.id_good GROUP BY goods_categories.id_gc";
+            List<orders_stats> temp_stats = db.Database.SqlQuery<orders_stats>(query).ToList<orders_stats>();
+            foreach (var item in temp_stats)
+            {
+                statistics.Add(item);
+            }
         }
 
         private void GetOrderItems(string param)
@@ -165,6 +177,7 @@ namespace Shop.ViewModel
             CreateOrderCommand = new RelayCommand(() => NewOrder());
             GetOrderItemsCommand = new RelayCommand<string>((param) => GetOrderItems(param));
             order_items = new ObservableCollection<order_item>();
+            order = new ObservableCollection<good>();
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>
@@ -176,7 +189,6 @@ namespace Shop.ViewModel
                     }
                     db = new DbClient();
                     //db.goods.Load();
-                    order = new ObservableCollection<good>();
                     LoadGoodsBase();
                     /*goods_base = new List<good_view>();
                     string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";

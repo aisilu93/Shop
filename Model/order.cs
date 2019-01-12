@@ -66,4 +66,10 @@ namespace Shop.Model
             private set;
         }
     }
+
+    public class orders_stats
+    {
+        public string name_gc { get; set; }
+        public int amount { get; set; }
+    }
 }
