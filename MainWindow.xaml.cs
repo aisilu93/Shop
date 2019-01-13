@@ -61,6 +61,16 @@ namespace Shop
                 case "CreateOrder":
                     MessageBox.Show("Заказ №"+ action.Parameter+" добавлен");
                     break;
+                case "UserEdit":
+                    ViewModelLocator loc = new ViewModelLocator();
+                    this.Page2View.IdLabel.DataContext = loc.ShopWind.cur_user;
+                    this.Page2View.LoginLabel.DataContext = loc.ShopWind.cur_user;
+                    this.Page2View.PassLabel.DataContext = loc.ShopWind.cur_user;
+                    this.Page2View.CategoryLabel.SelectedValue = loc.ShopWind.cur_user.user_cat;
+                    break;
+                case "UserSave":
+                    MessageBox.Show("Изменения сохранены");
+                    break;
                 default:
                     break;
             }

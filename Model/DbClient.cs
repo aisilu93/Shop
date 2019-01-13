@@ -14,5 +14,6 @@ namespace Shop.Model
         }
         public DbSet<good> goods { get; set; }
         public DbSet<user> users { get; set; }
+        public DbSet<user_categories> user_cats { get; set; }
     }
 }

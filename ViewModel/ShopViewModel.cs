@@ -31,8 +31,10 @@ namespace Shop.ViewModel
         public ObservableCollection<good_view> goods_base { get; set; }
         public ObservableCollection<good> order { get; set; }
         public ObservableCollection<order> orders_base { get; set; }
+        public ObservableCollection<user_view> users_base { get; set; }
         public ObservableCollection<order_item> order_items { get; set; }
         public ObservableCollection<orders_stats> statistics { get; set; }
+        public List<user_categories> categories { get; set; }
 
         public class result: INotifyPropertyChanged
         {
@@ -53,10 +55,14 @@ namespace Shop.ViewModel
             }
         }
         public result res { get; set; }
+        public user cur_user { get; set; }
         public RelayCommand<int> AddCommand                 { get; set; }
         public RelayCommand<int> DeleteCommand              { get; set; }
         public RelayCommand CreateOrderCommand              { get; set; }
         public RelayCommand<string> GetOrderItemsCommand    { get; set; }
+        public RelayCommand<int> PreChangeUserCommand       { get; set; }
+        public RelayCommand ChangeUserCommand               { get; set; }
+        public RelayCommand CancelCommand                   { get; set; }
 
         private object AddingGood(int param)
         {
@@ -155,6 +161,18 @@ namespace Shop.ViewModel
             }
         }
 
+        private void LoadUsersBase()
+        {
+            users_base.Clear();
+            //string query = "SELECT users.*, user_categories.name_uc FROM users, user_categories WHERE users.user_cat=user_categories.id_uc";
+            string query = "SELECT users.*, user_categories.name_uc FROM users LEFT JOIN user_categories ON users.user_cat = user_categories.id_uc";
+            List<user_view> temp_users = db.Database.SqlQuery<user_view>(query).ToList<user_view>();
+            foreach (var item in temp_users)
+            {
+                users_base.Add(item);
+            }
+        }
+
         private void GetOrderItems(string param)
         {
             order_items.Clear();
@@ -164,6 +182,35 @@ namespace Shop.ViewModel
             {
                 order_items.Add(item);
             }
+        }
+
+        private void PreChangeUser(int param=-1)
+        {
+            if(param!=-1)
+                cur_user = db.users.Where(x => x.id_user == param).First<user>();
+            var msg = new GoToPageMessage() { PageName = "UserEdit", Parameter = param.ToString() };
+            Messenger.Default.Send<GoToPageMessage>(msg);
+        }
+
+        private void ChangeUser()
+        {
+            string query = "";
+            if (cur_user.id_user == 0)
+                query = "INSERT  INTO users(`login`,`password`,`user_cat`) VALUES ('"+cur_user.login+"','"+cur_user.password+"','"+cur_user.user_cat+"')";
+            else query = "UPDATE users SET `login`='" + cur_user.login + "', `password`=" + cur_user.password + ", `user_cat`=" + cur_user.user_cat + " WHERE `id_user`=" + cur_user.id_user;
+            db.Database.ExecuteSqlCommand(query);
+            db.SaveChanges();
+            var msg = new GoToPageMessage() { PageName = "UserSave" };
+            Messenger.Default.Send<GoToPageMessage>(msg);
+            cur_user = new user();
+            PreChangeUser();
+            LoadUsersBase();
+        }
+
+        private void CancelEdit()
+        {
+            cur_user = new user();
+            PreChangeUser();
         }
 
         /// <summary>
@@ -177,8 +224,13 @@ namespace Shop.ViewModel
             DeleteCommand = new RelayCommand<int>((param) => DeletingGood(param));
             CreateOrderCommand = new RelayCommand(() => NewOrder());
             GetOrderItemsCommand = new RelayCommand<string>((param) => GetOrderItems(param));
+            PreChangeUserCommand = new RelayCommand<int>((param) => PreChangeUser(param));
+            ChangeUserCommand = new RelayCommand(() => ChangeUser());
+            CancelCommand = new RelayCommand(() => CancelEdit());
             order_items = new ObservableCollection<order_item>();
             order = new ObservableCollection<good>();
+            users_base = new ObservableCollection<user_view>();
+            cur_user = new user();
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>
@@ -191,10 +243,13 @@ namespace Shop.ViewModel
                     db = new DbClient();
                     //db.goods.Load();
                     LoadGoodsBase();
+                    LoadUsersBase();
+                    db.user_cats.Load();
+                    categories = db.user_cats.ToList();
                     /*goods_base = new List<good_view>();
                     string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
                     goods_base = db.Database.SqlQuery<good_view>(query).ToList<good_view>();*/
-                    
+
                     //goods_base =db.goods.ToList<good>();
                     //foreach (var i in db.goods.ToList<good>()) { goods_base.Add(i.name_g); }
                     //WelcomeTitle2 = string.Join(" ", item.lst);
