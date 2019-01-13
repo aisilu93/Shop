@@ -34,6 +34,7 @@ namespace Shop.ViewModel
         public ObservableCollection<user_view> users_base { get; set; }
         public ObservableCollection<order_item> order_items { get; set; }
         public ObservableCollection<orders_stats> statistics { get; set; }
+        public ObservableCollection<goods_category> goods_categories { get; set; } // Категории товаров
         public List<user_categories> categories { get; set; }
 
         public class result: INotifyPropertyChanged
@@ -54,8 +55,8 @@ namespace Shop.ViewModel
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
             }
         }
-        public result res { get; set; }
-        public user cur_user { get; set; }
+        public result res                                   { get; set; }
+        public user cur_user                                { get; set; }
         public RelayCommand<int> AddCommand                 { get; set; }
         public RelayCommand<int> DeleteCommand              { get; set; }
         public RelayCommand CreateOrderCommand              { get; set; }
@@ -63,7 +64,12 @@ namespace Shop.ViewModel
         public RelayCommand<int> PreChangeUserCommand       { get; set; }
         public RelayCommand ChangeUserCommand               { get; set; }
         public RelayCommand CancelCommand                   { get; set; }
+        public RelayCommand<int> EditGoodCommand            { get; set; } // Команда для изменения товара
+        public RelayCommand<int> DeleteGoodCommand          { get; set; } // Команда удаления товара из базы данных
+        public RelayCommand<int> ReplenishGoodsCommand      { get; set; } // Команда для пополнения запасов товара
+        public RelayCommand OpenGoodCreationWindowCommand   { get; set; } // Команда открытия окна создания товара
 
+        // Добавление товара к заказу
         private object AddingGood(int param)
         {
             good_view selected_item = goods_base.First(x => x.id_good == param);
@@ -94,6 +100,8 @@ namespace Shop.ViewModel
             }
             return null;
         }
+
+        // Удаление товара из заказа
         private object DeletingGood(int param)
         {
             good order_item = order.Where(x => x.id_good == param).FirstOrDefault();
@@ -105,6 +113,8 @@ namespace Shop.ViewModel
             }
             return null;
         }
+
+        // Сделать заказ
         private object NewOrder()
         {
             TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1));
@@ -133,6 +143,7 @@ namespace Shop.ViewModel
             return null;
         }
 
+        // Загрузить информацию о товарах из базы
         private void LoadGoodsBase()
         {
             if (goods_base==null) goods_base = new ObservableCollection<good_view>();
@@ -143,6 +154,7 @@ namespace Shop.ViewModel
             {
                 goods_base.Add(item);
             }
+
             if (orders_base == null) orders_base = new ObservableCollection<order>();
             else orders_base.Clear();
             query = "SELECT orders.*,users.login FROM orders, users WHERE orders.id_user=users.id_user";
@@ -151,6 +163,7 @@ namespace Shop.ViewModel
             {
                 orders_base.Add(item);
             }
+
             if (statistics == null) statistics = new ObservableCollection<orders_stats>();
             else statistics.Clear();
             query = "SELECT goods_categories.name_gc || ': ' || SUM(order_items.amount) AS name_gc, SUM(order_items.amount) AS amount FROM goods_categories, order_items, goods WHERE goods.cat_g = goods_categories.id_gc AND goods.id_good = order_items.id_good GROUP BY goods_categories.id_gc";
@@ -159,8 +172,18 @@ namespace Shop.ViewModel
             {
                 statistics.Add(item);
             }
+
+            if (goods_categories == null) goods_categories = new ObservableCollection<goods_category>();
+            else goods_categories.Clear();
+            query = "SELECT * FROM goods_categories";
+            List<goods_category> temp_categories = db.Database.SqlQuery<goods_category>(query).ToList<goods_category>();
+            foreach (var item in temp_categories)
+            {
+                goods_categories.Add(item);
+            }
         }
 
+        // Загрузить информацию о пользователях из базы
         private void LoadUsersBase()
         {
             users_base.Clear();
@@ -213,6 +236,65 @@ namespace Shop.ViewModel
             PreChangeUser();
         }
 
+        // Открыть окно изменения товара
+        private void OpenEditWindow(int good_id)
+        {
+            EditGoodWindow editGoodWindow = new EditGoodWindow(goods_base.Where(g => g.id_good == good_id).First(), this);
+            editGoodWindow.Show();
+        }
+
+        // Открыть окно создания товара
+        private void OpenGoodCreationWindow()
+        {
+            CreateGoodWindow createGoodWindow = new CreateGoodWindow(this);
+            createGoodWindow.Show();
+        }
+
+        // Изменить товар
+        public void EditGood(int good_id, string good_name, int price, int category_id, int in_storage)
+        {
+            string query = $"UPDATE goods SET name_g=\"{good_name}\", price={price}, cat_g={category_id}, in_storage={in_storage} WHERE id_good={good_id}";
+            db.Database.ExecuteSqlCommand(query);
+            LoadGoodsBase();
+        }
+
+        // Добавить новый товар в базу
+        public void AddNewGood(string good_name, int price, int category_id, int in_storage)
+        {
+            good new_good = new good();
+            new_good.name_g = good_name;
+            new_good.price = price;
+            new_good.cat_g = category_id;
+            new_good.in_storage = in_storage;
+            db.goods.Add(new_good);
+            db.SaveChanges();
+
+            LoadGoodsBase();
+        }
+
+        // Удалить товар со склада
+        public void DeleteGood(int good_id)
+        {
+            string query = $"UPDATE goods SET in_storage = 0 WHERE id_good={good_id}";
+            db.Database.ExecuteSqlCommand(query);
+            LoadGoodsBase();
+        }
+
+        // Пополнить запас товара на складе
+        public void ReplenishGoods(int good_id)
+        {
+            ReplenishGoodsWindow replenishDialog = new ReplenishGoodsWindow();
+            if (replenishDialog.ShowDialog() == true)
+            {
+                int amount;
+                if (!Int32.TryParse(replenishDialog.AmountBox.Text.Trim(), out amount)) { amount = 0; }
+
+                string query = $"UPDATE goods SET in_storage = in_storage + {amount} WHERE id_good={good_id}";
+                db.Database.ExecuteSqlCommand(query);
+                LoadGoodsBase();
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -231,6 +313,12 @@ namespace Shop.ViewModel
             order = new ObservableCollection<good>();
             users_base = new ObservableCollection<user_view>();
             cur_user = new user();
+
+            EditGoodCommand = new RelayCommand<int>((param) => OpenEditWindow(param));
+            DeleteGoodCommand = new RelayCommand<int>((param) => DeleteGood(param));
+            OpenGoodCreationWindowCommand = new RelayCommand(() => OpenGoodCreationWindow());
+            ReplenishGoodsCommand = new RelayCommand<int>((good_id) => ReplenishGoods(good_id));
+
             _dataService = dataService;
             _dataService.GetData(
                 (user item, Exception error) =>
@@ -241,25 +329,11 @@ namespace Shop.ViewModel
                         return;
                     }
                     db = new DbClient();
-                    //db.goods.Load();
                     LoadGoodsBase();
                     LoadUsersBase();
                     db.user_cats.Load();
                     categories = db.user_cats.ToList();
-                    /*goods_base = new List<good_view>();
-                    string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
-                    goods_base = db.Database.SqlQuery<good_view>(query).ToList<good_view>();*/
-
-                    //goods_base =db.goods.ToList<good>();
-                    //foreach (var i in db.goods.ToList<good>()) { goods_base.Add(i.name_g); }
-                    //WelcomeTitle2 = string.Join(" ", item.lst);
                 });
         }
-        ////public override void Cleanup()
-        ////{
-        ////    // Clean up if needed
-
-        ////    base.Cleanup();
-        ////}
     }
 }

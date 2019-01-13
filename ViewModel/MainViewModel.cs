@@ -68,26 +68,6 @@ namespace Shop.ViewModel
         {
             get;
             private set;
-            /*{
-                /*Action showMethod = delegate () {
-                    DbClient db = new DbClient();
-                    db.users.Load();
-                    user us = new user();
-                    us = db.users
-                         .Where(u => u.login == _login)
-                         .FirstOrDefault<user>();
-                    //us = db.users.Find(_login);
-                    if (us != null && us.password == _password)
-                    {
-                        //ShopWindow s = new ShopWindow();
-                        //s.Show();
-                        //ShopViewModel a = new ShopViewModel(_dataService);
-                        //Application.Current.Windows[0].Close();
-                    }
-                };
-                return enterCommand ??
-                    (enterCommand = new RelayCommand(showMethod));
-            }*/
         }
         private object GoToPageShop()
         {
@@ -97,17 +77,12 @@ namespace Shop.ViewModel
             us = db.users
                  .Where(u => u.login == _login)
                  .FirstOrDefault<user>();
-            //us = db.users.Find(_login);
             if (us != null && us.password == _password)
             {
-                var msg = new GoToPageMessage() { PageName = "ShopWindow", Parameter = us.id_user.ToString(), Parameter2=us.user_cat.ToString() };
+                var msg = new GoToPageMessage() { PageName = "ShopWindow", Parameter = us.id_user.ToString(), Parameter2 = us.user_cat.ToString() };
                 Messenger.Default.Send<GoToPageMessage>(msg);
-                //ShopWindow s = new ShopWindow();
-                //s.Show();
-                //ShopViewModel a = new ShopViewModel(_dataService);
-                //Application.Current.Windows[0].Close();
             }
-            
+
             return null;
         }
         /// <summary>
@@ -125,17 +100,9 @@ namespace Shop.ViewModel
                         // Report error here
                         return;
                     }
-                    //WelcomeTitle2 = string.Join(" ", item.lst);
                 });
             login = "test_admin";
             password = "123456";
         }
-
-        ////public override void Cleanup()
-        ////{
-        ////    // Clean up if needed
-
-        ////    base.Cleanup();
-        ////}
     }
 }

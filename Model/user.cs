@@ -11,38 +11,10 @@ namespace Shop.Model
     public class user: INotifyPropertyChanged
     {
         [Key]
-        public int id_user
-        {
-            get;
-            set;
-        }
-        public string login
-        {
-            get;//{ return login; }
-            set;
-            /*{
-                login = value;
-                OnPropertyChanged("login");
-            }*/
-        }
-        public string password
-        {
-            get;// { return password; }
-            set;
-            /*{
-                password = value;
-                OnPropertyChanged("password");
-            }*/
-        }
-        public int user_cat
-        {
-            get;// { return user_cat; }
-            set;
-            /*{
-                /*user_cat = value;
-                OnPropertyChanged("user_cat");
-            }*/
-        }
+        public int id_user { get; set; }
+        public string login { get; set; }
+        public string password { get; set; }
+        public int user_cat { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
