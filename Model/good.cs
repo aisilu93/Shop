@@ -62,7 +62,7 @@ namespace Shop.Model
         public int in_storage
         {
             get;
-             set;
+            set;
         }
         public int id_gc
         {
@@ -70,6 +70,11 @@ namespace Shop.Model
             set;
         }
         public string name_gc
+        {
+            get;
+            set;
+        }
+        public bool in_storage_bool
         {
             get;
             set;

@@ -38,7 +38,8 @@
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Заказать">
+                                    <Button Content="Заказать" IsEnabled="{Binding in_storage_bool}" >
+                                        
                                         <Custom:Interaction.Triggers>
                                             <Custom:EventTrigger EventName="Click">
                                                 <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButtonClicked"
@@ -177,9 +178,9 @@
                                     <DataTemplate>
                                         <Button Content="Пополнить запас">
                                             <Custom:Interaction.Triggers>
-                                                <Custom:EventTrigger EventName="Click1">
-                                                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButton1Clicked"
-                                                               Command="{Binding ElementName=GoodsEditTable, Path=DataContext.ReplenishGoodsCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
+                                                <Custom:EventTrigger EventName="Click">
+                                                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButtonClicked"
+                                                               Command="{Binding ElementName=GoodsTable, Path=DataContext.ReplenishGoodsCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
                                                 </Custom:EventTrigger>
                                             </Custom:Interaction.Triggers>
                                         </Button>
@@ -192,9 +193,9 @@
                                     <DataTemplate>
                                         <Button Content="Изменить">
                                             <Custom:Interaction.Triggers>
-                                                <Custom:EventTrigger EventName="Click2">
-                                                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButton2Clicked"
-                                                               Command="{Binding ElementName=GoodsEditTable, Path=DataContext.EditGoodCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
+                                                <Custom:EventTrigger EventName="Click">
+                                                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButtonClicked"
+                                                               Command="{Binding ElementName=GoodsTable, Path=DataContext.EditGoodCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
                                                 </Custom:EventTrigger>
                                             </Custom:Interaction.Triggers>
                                         </Button>
@@ -207,9 +208,9 @@
                                     <DataTemplate>
                                         <Button Content="Удалить">
                                             <Custom:Interaction.Triggers>
-                                                <Custom:EventTrigger EventName="Click3">
-                                                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButton3Clicked"
-                                                               Command="{Binding ElementName=GoodsEditTable, Path=DataContext.DeleteGoodCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
+                                                <Custom:EventTrigger EventName="Click">
+                                                    <GalaSoft_MvvmLight_Command1:EventToCommand x:Name="AddButtonClicked"
+                                                               Command="{Binding ElementName=GoodsTable, Path=DataContext.DeleteGoodCommand, Mode=OneWay}" CommandParameter="{Binding id_good}"/>
                                                 </Custom:EventTrigger>
                                             </Custom:Interaction.Triggers>
                                         </Button>

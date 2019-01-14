@@ -148,11 +148,14 @@ namespace Shop.ViewModel
         {
             if (goods_base==null) goods_base = new ObservableCollection<good_view>();
             else goods_base.Clear();
-            string query = "SELECT * FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
+            string query = "SELECT *,CASE WHEN goods.in_storage=0 THEN FALSE ELSE TRUE END AS in_storage_bool FROM goods, goods_categories WHERE goods.cat_g=goods_categories.id_gc";
             List<good_view> temp = db.Database.SqlQuery<good_view>(query).ToList<good_view>();
             foreach(var item in temp)
             {
+                if (item.in_storage > 0) item.in_storage_bool = true;
+                else item.in_storage_bool = false;
                 goods_base.Add(item);
+
             }
 
             if (orders_base == null) orders_base = new ObservableCollection<order>();
